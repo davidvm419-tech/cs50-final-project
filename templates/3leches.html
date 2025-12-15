@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Homepage
+{% endblock %}
+
+{% block main %}
+    <section class="products">
+      <h1 class="mb-5" style="color: #d81dac;">Bienvenidos a Chicake</h1>
+        <P class="mb-5"style="color: #3700B7; font-size:20px;">Da un vistazo a nuestra selección de postres!</P>
+            <ul class="row g-4 desserts-list list-unstyled">
+                <li class="col-md-6 mb-3">
+                    <div class="d-flex align-items-center">
+                        <img src="/static/caketresleches.jpg" alt="Torta de 3 leches" class="img-thumbnail me-3" style="width: 250px; height: auto;">
+                        <span>Las tortas de 3 leches son deliciosas</span>
+                    </div>
+                </li>
+            </ul>
+    </section>
+{% endblock %}

@@ -1,0 +1,48 @@
+/* Navbar background color */
+
+.navbar
+{
+    background-color: rgb(217, 183, 247) !important;
+}
+
+/* colors for nav bar links*/
+.nav-link
+{
+    color:rgb(102, 8, 243);
+    font-weight: bold;
+    font-size: 20px;
+}
+
+/* Images style */
+.logo
+{
+    width: 150px;
+    height: 150px;
+    border-radius: 45%;
+    color:rgb(255, 157, 250);
+}
+
+/* Separate left and right columns */
+.desserts-list li:nth-child(odd) 
+{
+    margin-left: -50px;
+}
+
+.desserts-list li:nth-child(even) 
+{
+    margin-left: 50px;
+}
+
+/* Change button colors*/
+.btn
+{
+    background-color:rgb(117, 28, 201);
+    border-color: rgb(117, 28, 201);
+}
+
+
+.btn:hover
+{
+    background-color: rgb(213, 173, 236);
+    border-color: rgb(213, 173, 236);
+}
