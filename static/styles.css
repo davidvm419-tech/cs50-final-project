@@ -5,13 +5,25 @@
     background-color: rgb(217, 183, 247) !important;
 }
 
-/* colors for nav bar links*/
+/* colors and text for nav bar links*/
 .nav-link
 {
-    color:rgb(102, 8, 243);
+    color:rgb(137, 67, 241);
     font-weight: bold;
     font-size: 20px;
+    font-family: 'Comic Sans MS', cursive, sans-serif; /*Euphoria Script*/
+    letter-spacing: 3.5px;
+    word-spacing: -1.5px;
 }
+
+/* colors and text for headers*/
+h1
+{
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    letter-spacing: 3.5px;
+    word-spacing: -1.5px;
+}
+
 
 /* Images style */
 .logo
