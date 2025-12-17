@@ -177,51 +177,80 @@ def userhomepage():
 def orders():
     # Get products and types from database
     products = []
+    types = []
     db = get_db()
     cursor = db.execute("SELECT DISTINCT(name) FROM products")
     rows = cursor.fetchall()
     for row in rows:
         products.append(row["name"])
+    cursor = db.execute("SELECT DISTINCT(TYPE) FROM products")
+    rows = cursor.fetchall()
+    for row in rows:
+        types.append(row["type"])
     if request.method == "POST":
         # Check selection of products
         if not request.form.get("product"):
             flash("Por favor selecciona un producto")
-            return render_template("orders.html", products=products)
+            return render_template("orders.html", products=products, types=types)
         # Check valid selection of quantity
         if not request.form.get("quantity"):
             flash("Por favor selecciona la cantidad")
-            return render_template("orders.html", products=products)
+            return render_template("orders.html", products=products, types=types)
         if int(request.form.get("quantity")) <= 0:
             flash("Por favor selecciona una cantidad válida (minimo 1)")
-            return render_template("orders.html", products=products)
+            return render_template("orders.html", products=products, types=types)
         # Check selection of type
-        if request.form.get("product") == "cupcake" and request.form.get("type"):
-            flash("Los cupcakes solo cuentan con una presentación, por favor solo selecciona una cantidad")
-            return render_template("orders.html", products=products)
+        if request.form.get("product") == "cupcake" and request.form.get("type") != "und":
+            flash("Los cupcakes solo cuentan con una presentación, por favor solo selecciona und")
+            return render_template("orders.html", products=products, types=types)
         if request.form.get("product") != "cupcake" and not request.form.get("type"):
             flash("Por favor selecciona un tamaño")
-            return render_template("orders.html", products=products)
-        if request.form.get("product") != "cupcake" and request.form.get("type") != "mediano" and request.form.get("type") != "grande" and request.form.get("type") != "personalizado":
-            flash("Por favor selecciona un tamaño válido (mediano, grande o personalizado)")
-            return render_template("orders.html", products=products)
+            return render_template("orders.html", products=products, types=types)
         flash("Pedido guardado exitosamente!")
         # Save input and display order 
         product = request.form.get("product")
         quantity = int(request.form.get("quantity"))
         type = request.form.get("type")
-        # Retrieve price from database
-        cursor = db.execute("SELECT price FROM products WHERE name = ?, AND ")
-
-        price
-        order = {
-            "product": product,
-            "quantity": quantity,
-            "type": type
-        }
-        return render_template("orders.html", products=products, order=order)
-
+        # Retrieve price from database if neccesary
+        # For cupcakes price is fixed, take it into consideration
+        if  product != "cupcake":
+            cursor = db.execute("SELECT price FROM products WHERE name = ? AND type = ?", (product, type))
+            price = cursor.fetchone()
+            price = int(price["price"])
+            price = round(price * quantity, 2)
+        else:
+            # For cupcakes price is fixed, take it into consideration
+            price = round(quantity * 6000, 2)
+        # Delete orders that are not completed
+        db.execute ("DELETE FROM temp_orders WHERE date < datetime('now', '-2 minutes') ")
+        db.commit()
+        # Insert data into temp_orders table
+        db.execute("INSERT INTO temp_orders (user_id, product, quantity, type, price) VALUES (?, ?, ?, ?, ?)", 
+                   (session["user_id"], product, quantity, type, price))
+        db.commit()
+        # Retrieve all orders from temp_orders table to display
+        cursor = db.execute("SELECT * FROM temp_orders WHERE user_id = ?", (session["user_id"],))
+        orders = cursor.fetchall()
+        # Retrieve total purchase
+        cursor = db.execute("SELECT SUM(price) AS total FROM temp_orders WHERE user_id = ?", (session["user_id"],))
+        total = cursor.fetchone()
+        total = total["total"]
+        return render_template("orders.html", products=products, types=types, orders=orders, total_purchase=total)
+        if request.form.get("action") == "checkout":
+            # Move order temp_orders to users_orders
+            
+            # Delete temp_orders
+            # Return to userhomepage
+            return render_template("userhomepage.html")
     else:
-        return render_template("orders.html", products=products)
+        # Retrive and empty order if the user has one
+        cursor = db.execute("SELECT * FROM temp_orders WHERE user_id = ?", (session["user_id"],))
+        orders = cursor.fetchall()
+        # Retrieve total purchase if the user has one
+        cursor = db.execute("SELECT SUM(price) AS total FROM temp_orders WHERE user_id = ?", (session["user_id"],))
+        total = cursor.fetchone()
+        total = total["total"]
+        return render_template("orders.html", products=products, types=types, orders=orders, total_purchase=total)
     
 
 # Routes to products  
