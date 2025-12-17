@@ -5,10 +5,9 @@ from datetime import datetime
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 from flask import g
-import sqlite3
 from msgspec import field
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import login_requered, password_check
+from helpers import login_requered, password_check 
 
 # Configure application
 app = Flask(__name__)
@@ -122,7 +121,7 @@ def register():
         cursor = db.execute("SELECT id FROM users WHERE username = ?", (request.form.get("username"),))
         row = cursor.fetchone()
         session["user_id"] = row["id"]
-        return redirect("/", 200)
+        return redirect("/userhomepage", 200)
     else: 
         return render_template("register.html")
 
@@ -172,7 +171,60 @@ def userhomepage():
         return redirect("/homepage.html")
 
 
-# Routes to products
+# Route to create orders
+@app.route("/orders", methods=["GET", "POST"])
+@login_requered
+def orders():
+    # Get products and types from database
+    products = []
+    db = get_db()
+    cursor = db.execute("SELECT DISTINCT(name) FROM products")
+    rows = cursor.fetchall()
+    for row in rows:
+        products.append(row["name"])
+    if request.method == "POST":
+        # Check selection of products
+        if not request.form.get("product"):
+            flash("Por favor selecciona un producto")
+            return render_template("orders.html", products=products)
+        # Check valid selection of quantity
+        if not request.form.get("quantity"):
+            flash("Por favor selecciona la cantidad")
+            return render_template("orders.html", products=products)
+        if int(request.form.get("quantity")) <= 0:
+            flash("Por favor selecciona una cantidad válida (minimo 1)")
+            return render_template("orders.html", products=products)
+        # Check selection of type
+        if request.form.get("product") == "cupcake" and request.form.get("type"):
+            flash("Los cupcakes solo cuentan con una presentación, por favor solo selecciona una cantidad")
+            return render_template("orders.html", products=products)
+        if request.form.get("product") != "cupcake" and not request.form.get("type"):
+            flash("Por favor selecciona un tamaño")
+            return render_template("orders.html", products=products)
+        if request.form.get("product") != "cupcake" and request.form.get("type") != "mediano" and request.form.get("type") != "grande" and request.form.get("type") != "personalizado":
+            flash("Por favor selecciona un tamaño válido (mediano, grande o personalizado)")
+            return render_template("orders.html", products=products)
+        flash("Pedido guardado exitosamente!")
+        # Save input and display order 
+        product = request.form.get("product")
+        quantity = int(request.form.get("quantity"))
+        type = request.form.get("type")
+        # Retrieve price from database
+        cursor = db.execute("SELECT price FROM products WHERE name = ?, AND ")
+
+        price
+        order = {
+            "product": product,
+            "quantity": quantity,
+            "type": type
+        }
+        return render_template("orders.html", products=products, order=order)
+
+    else:
+        return render_template("orders.html", products=products)
+    
+
+# Routes to products  
 @app.route("/cupcakes")
 def cupcakes():
     return render_template("cupcakes.html")

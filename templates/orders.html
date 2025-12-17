@@ -1,0 +1,51 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    creación de pedido
+{% endblock %}
+
+{% block main %}
+    <h1 class="mb-5">¿Qué quieres pedir hoy?</h1>
+        <form action="/orders" method="post">
+            <div class="mb-3">
+                <select class="form-control mx-auto w-auto" name="product">
+                    <option disabled selected>Elige un producto</option>
+                    {% for product in products %}
+                        <option>{{ product }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <input autocomplete="off" class="form-control mx-auto w-auto" name="quantity" placeholder="Cantidad" type="number">
+            </div>
+                <div class="mb-3">
+                <input autocomplete="off" class="form-control mx-auto w-25" name="type" placeholder="Tamaño (no aplica para cupcakes)" type="text">
+            </div>
+            <button class="btn btn-primary" type="submit">Guardar productos</button>
+        </form>
+        <br>
+        <h1 class="mb-5">Revisa tu orden</h1>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Tamaño</th>
+                        <th>Precio</th>
+                    </tr>
+                <tbody>
+                    <!--Populate the table with order information-->
+                    {% for row in order %}
+                       <tr>
+                            <td>{{ row.product }}</td>
+                            <td>{{ row.quantity }}</td>
+                            <td>{{ row.type }}</td>
+                       </tr>
+                    {% endfor %}
+                </tbody>
+            </thead>
+        </table>
+        <form action="/orders" method="post">
+            <button class="btn btn-primary" type="submit">Realizar pedido</button>
+        </form>
+{% endblock %}

@@ -29,7 +29,7 @@ def password_check(password):
     if not has_symbol:
         return False
     return True
-    
+
     
 
 
