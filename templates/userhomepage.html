@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    inicio
+{% endblock %}
+
+{% block main %}
+    <section class="products">
+      <h1 class="mb-5">Bienvenido {{ username }}!</h1>
+        <h2>Es un placer tenerte de vuelta, revisa lo último que pediste:</h2>
+                <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Fecha de pedido</th>
+                </tr>
+                <tbody>
+                    <!--Populate the table with last order-->
+                    
+                       <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                       </tr>
+                    
+                </tbody>
+            </thead>
+        </table>
+        <h2>¿Listo para realizar otro pedido?</h2>
+    </section>
+{% endblock %}

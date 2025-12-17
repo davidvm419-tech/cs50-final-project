@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Iniciar sesión
+{% endblock %}
+
+{% block main %}
+    <h1 class="mb-5">Bienvenido de vuelta</h1>
+    <h3 class="mb-5"> {{ message }}</h3>
+        <form action="/login" method="post">
+            <div class="mb-3">
+                <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="username" placeholder="usuario o telefono" type="text">
+            </div>
+            <div class="mb-3">
+                <input class="form-control mx-auto w-auto" name="password" placeholder="Contraseña" type="password">
+            </div>
+            <button class="btn btn-primary" type="submit">Entrar</button>
+        </form>
+        <br>
+        <form action="/register">
+            <button class="btn btn-primary" type="submit">¿Aun no tienes cuenta?</button>
+        </form>
+{% endblock %}

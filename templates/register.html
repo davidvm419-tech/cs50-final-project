@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Registro
+{% endblock %}
+
+{% block main %}
+    <h1 class="mb-5">Estas a un paso de inciar nuestra historia juntos</h1>
+    <h3 class="mb-5"> {{ message }}</h3>
+        <form action="/register" method="post">
+            <div class="mb-3">
+                <input autocomplete="off" autofocus class="form-control mx-auto w-auto" name="username" placeholder="Nombre de usuario" type="text">
+            </div>
+            <div class="mb-3">
+                <input class="form-control mx-auto w-auto" name="phone" placeholder="Telefono" type="text">
+            </div>
+            <div class="mb-3">
+                <input class="form-control mx-auto w-auto" name="password" placeholder="Contraseña" type="password">
+            </div>
+            <div class="mb-3">
+                <input class="form-control mx-auto w-auto" name="confirmation" placeholder="Confirma Contraseña" type="password">
+            </div>
+        <button class="btn btn-primary" type="submit">Registrate!</button>
+    </form>
+{% endblock %}

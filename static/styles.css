@@ -2,24 +2,63 @@
 
 .navbar
 {
-    background-color: rgb(217, 183, 247) !important;
+    background-color: #D9B7F7 !important;
 }
 
 /* colors and text for nav bar links*/
 .nav-link
 {
-    color:rgb(137, 67, 241);
+    color:#8943F1;
     font-weight: bold;
-    font-size: 20px;
-    font-family: 'Comic Sans MS', cursive, sans-serif; /*Euphoria Script*/
+    font-family: 'Euphoria Script';  
+    font-size: 25px;  
     letter-spacing: 3.5px;
     word-spacing: -1.5px;
 }
 
-/* colors and text for headers*/
+/* colors and text style for webpage*/
 h1
 {
-    font-family: 'Comic Sans MS', cursive, sans-serif;
+    color: #d81dac;
+    font-weight: bold;
+    font-family: 'Euphoria Script'; 
+    font-size: 40px;
+    letter-spacing: 3.5px;
+    word-spacing: -1.5px;
+}
+
+h2
+{
+    color: #3700B7;
+    font-family: 'Euphoria Script'; 
+    font-size: 30px;
+    letter-spacing: 3.5px;
+    word-spacing: -1.0px;
+}
+
+/* Alert message for errors */
+h3
+{
+    color: #fa0404;
+    font-family: 'Euphoria Script'; 
+    font-size: 30px;
+    letter-spacing: 3.5px;
+    word-spacing: -1.0px;
+}
+
+span
+{
+
+    font-family: 'Euphoria Script'; 
+    font-size: 22px;
+    letter-spacing: 2.5px;
+    word-spacing: -1.5px;
+}
+
+p
+{
+    font-family: 'Euphoria Script'; 
+    font-size: 25px;
     letter-spacing: 3.5px;
     word-spacing: -1.5px;
 }
@@ -28,10 +67,10 @@ h1
 /* Images style */
 .logo
 {
-    width: 150px;
-    height: 150px;
+    width: 140px;
+    height: 140px;
     border-radius: 45%;
-    color:rgb(255, 157, 250);
+    color:#FF9DFA;
 }
 
 /* Separate left and right columns */
@@ -45,16 +84,19 @@ h1
     margin-left: 50px;
 }
 
-/* Change button colors*/
+/* Change button style*/
 .btn
 {
-    background-color:rgb(117, 28, 201);
-    border-color: rgb(117, 28, 201);
+    font-family: 'Euphoria Script';
+    font-size: 15px;
+    background-color:#751CC9;
+    border-color: #751CC9;
 }
 
 
 .btn:hover
 {
-    background-color: rgb(213, 173, 236);
-    border-color: rgb(213, 173, 236);
+    
+    background-color: #D5ADEC;
+    border-color: #D5ADEC;
 }

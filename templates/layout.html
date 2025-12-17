@@ -14,7 +14,8 @@
     <!-- get icon and style for the page -->
     <link href="/static/logo.ico" rel="shortcut icon">
     <link href="/static/styles.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!--Font to give style to the page-->
+    <link href="https://fonts.googleapis.com/css2?family=Euphoria+Script&display=swap" rel="stylesheet">
         <title>Chicake postres{% block title %}{% endblock %}</title>
 
      </head>
@@ -23,7 +24,7 @@
 
         <nav class="bg-secondary border navbar navbar-expand-md navbar-light">
             <div class="container-fluid">
-                <a class="navbar-brand" href="/"><img class="logo" src="static/logo.jpg" alt="logo chicake"></a>
+                <a class="navbar-brand" href="{% if logged_in %}/user/{{ user_id }}{% else %}/{% endif %}"><img class="logo" src="static/logo.jpg" alt="logo chicake"></a>
                 <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbar" data-bs-toggle="collapse" type="button">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -31,20 +32,19 @@
                     
                     {% if session["user_id"] %}
                         <ul class="navbar-nav me-auto mt-2">
-                            <li class="nav-item"><a class="nav-link" href="/quote">Quote</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/buy">Buy</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/sell">Sell</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/history">History</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/buy">Realizar un pedido</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/history">Historial de pedidos</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/update_password">Cambiar Contraseña</a></li>
                         </ul>
                         <ul class="navbar-nav ms-auto mt-2">
-                            <li class="nav-item"><a class="nav-link" href="/logout">Log Out</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/logout">Cerrar sesión</a></li>
                         </ul>
                         
                     {% else %}
                         <ul class="navbar-nav ms-auto mt-2">
-                            <li class="nav-item"><a class="nav-link" href="/register">Realizar un pedido</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/register">Iniciar sesión</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/login">Crear cuenta</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/register">Crear cuenta</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/login">Iniciar sesión</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/about">Sobre nosotros</a></li>
                         </ul>
                     {% endif %}
                 </div>

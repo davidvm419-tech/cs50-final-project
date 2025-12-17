@@ -1,20 +1,17 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Homepage
+    Cupcakes
 {% endblock %}
 
 {% block main %}
     <section class="products">
-      <h1 class="mb-5" style="color: #d81dac;">Bienvenidos a Chicake</h1>
-        <P class="mb-5"style="color: #3700B7; font-size:20px;">Da un vistazo a nuestra selección de postres!</P>
-            <ul class="row g-4 desserts-list list-unstyled">
-                <li class="col-md-6 mb-3">
-                    <div class="d-flex align-items-center">
-                        <img src="/static/cupcakes.jpg" alt="diferentes estilos de cupcakes" class="img-thumbnail me-3" style="width: 350px; height: auto;">
-                        <span>Revisa nuestros deliciosos cupcakes</span>
-                    </div>
-                </li>
-            </ul>
+      <h1 class="mb-5">Cupcakes</h1>
+        <p class="mb-4">Nuestros deliciosos cupcakes son elaborados a mano y posteriormente horneados.<p>
+        <p class="mb-4">Puedes encontrarlos en sabores de vainilla, chocolate o redvelvet y rellenos de arequipe, junto a una deliciosa decoración en fondant o en crema.<p>
+    </section>
+    <section class="cupcakes_images">
+        <img src="/static/cupcakes1.jpg" alt="diferentes estilos de cupcakes" class="img-thumbnail me-3" style="width: 450px; height: auto;">
+        <img src="/static/cupcakes2.jpg" alt="diferentes estilos de cupcakes" class="img-thumbnail me-3" style="width: 390px; height: auto;">
     </section>
 {% endblock %}
