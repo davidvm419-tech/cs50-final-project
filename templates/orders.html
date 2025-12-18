@@ -26,11 +26,11 @@
                     {% endfor %}
                 </select>
                 <br>
-            <button class="btn btn-primary mb-3" type="submit">Guardar productos</button>
+            <button class="btn btn-primary mb-3" type="submit" name="action" value="save">Guardar productos</button>
         </form>
         <br>
         <h1 class="mb-5">Revisa tu orden</h1>
-            <table class="table table-striped">
+            <table class="table custom-table">
                 <thead>
                     <tr>
                         <th>Producto</th>
@@ -59,11 +59,11 @@
                 <tfoot>
                     <tr>
                         <td class="border-0 fw-bold text-end" colspan="3">Valor a pagar</td>
-                        <td class="border-0 text-center">{{ total_purchase }}</td>
+                        <td class="border-0 text-center" style="font-weight: bold;">${{ total_purchase }}</td>
                     </tr>
                 </tfoot>
-        </table>
+            </table>
         <form action="/orders" method="post">
-            <button class="btn btn-success" type="submit" name="action" value="checkout">Realizar pedido</button>
+            <button class="btn btn-success mb-3" type="submit" name="action" value="checkout">Realizar pedido</button>
         </form>
 {% endblock %}

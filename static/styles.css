@@ -84,7 +84,7 @@ p
     margin-left: 50px;
 }
 
-/* Change button style*/
+/* Change button style */
 .btn
 {
     font-family: 'Euphoria Script';
@@ -99,4 +99,25 @@ p
     
     background-color: #D5ADEC;
     border-color: #D5ADEC;
+}
+
+/* Style for the tables headers and rows*/
+.custom-table th
+{
+ Background-color: #fff5f7;
+ color: #5a3e36;
+ font-family: 'Euphoria Script';
+}
+
+.custom-table tr:nth-child(even)
+{
+ Background-color: #e9ecef;
+ font-family: 'Euphoria Script';
+ font-size: 20px;
+}
+
+.custom-table tr:nth-child(odd)
+{
+ font-family: 'Euphoria Script';
+ font-size: 20px;
 }

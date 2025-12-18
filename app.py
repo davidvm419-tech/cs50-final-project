@@ -13,7 +13,7 @@ from helpers import login_requered, password_check
 app = Flask(__name__)
 
 # Configure session to filesystem
-app.config["SESSION PERMANENT"] = False
+app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
@@ -60,11 +60,16 @@ def after_request(response):
 # Homepage route
 @app.route("/")
 def home():
+
     if "user_id" in session:
+        # Get username to greet him/her
         db = get_db()
         cursor = db.execute("SELECT * FROM users WHERE id = ?", (session["user_id"],))
         row = cursor.fetchone()
-        return render_template("userhomepage.html", username=row["username"])
+        # Get user last order if has one
+        cursor = db.execute("SELECT * FROM users_orders WHERE user_id = ? AND date = (SELECT MAX(date) AS 'max date' FROM users_orders WHERE user_id = ?)" , (session["user_id"], session["user_id"],))
+        last_order = cursor.fetchall()
+        return render_template("userhomepage.html", username=row["username"], last_order=last_order)
     else:
         return render_template("homepage.html")
 
@@ -78,7 +83,7 @@ def register():
     if request.method == "POST":
         # Check username
         if not request.form.get("username"):
-            flash("Porfavor ingresa un nombre de usuario")
+            flash("Por favor ingresa un nombre de usuario")
             return render_template("register.html")
         # Check if username already exists in database
         db = get_db()
@@ -102,10 +107,10 @@ def register():
             return render_template("register.html", message="El número de teléfono ya esta registrado!")
         # Validate password
         if not request.form.get("password"):
-            flash("Por favor ingresa una contraseña, debe tener al menos 6 caracteres y un simbolo")
+            flash("Por favor ingresa una contraseña, debe tener al menos 6 caracteres y un símbolo")
         # Check that password complies with security requirements
         if not password_check(request.form.get("password")):
-            return render_template("register.html", message="La contraseña debe tener al menos 6 caracteres y un simbolo!")
+            return render_template("register.html", message="La contraseña debe tener al menos 6 caracteres y un símbolo!")
         if not request.form.get("confirmation"):
             flash("Porfavor confirma tu contraseña")
             return render_template("register.html")
@@ -121,7 +126,7 @@ def register():
         cursor = db.execute("SELECT id FROM users WHERE username = ?", (request.form.get("username"),))
         row = cursor.fetchone()
         session["user_id"] = row["id"]
-        return redirect("/userhomepage", 200)
+        return redirect("/", 200)
     else: 
         return render_template("register.html")
 
@@ -132,10 +137,9 @@ def login():
 
     if request.method == "POST":
         # Check that username or password fields are not empty
-        if request.method == "POST":
-            if not request.form.get("username"):
-                flash("Porfavor ingresa tu nombre de usuario o teléfono")
-                return render_template("login.html")
+        if not request.form.get("username"):
+            flash("Porfavor ingresa tu nombre de usuario o teléfono")
+            return render_template("login.html")
         if not request.form.get("password"):
             flash("Porfavor ingresa tu contraseña")
             return render_template("login.html")
@@ -146,9 +150,9 @@ def login():
         # Verify username/phone exists and password is correct
         if row is None or not check_password_hash(row["hash"], request.form.get("password")):
             return render_template("login.html", message="Usuario o contraseña incorrecta!")
-        # Remember user session and redirect to homepage
+        # Remember user session and username. Redirect to homepage
         session["user_id"] = row["id"]
-        return redirect("/userhomepage", 200)
+        return redirect("/", 200)
     else:
         return render_template("login.html")
 
@@ -157,19 +161,6 @@ def logout():
     # Forget user session and redirect user to homepage
     session.clear()
     return redirect("/")
-
-# User homepage route
-@app.route("/userhomepage")
-@login_requered
-def userhomepage():
-    if "user_id" in session:
-        db = get_db()
-        cursor = db.execute("SELECT * FROM users WHERE id = ?", (session["user_id"],))
-        row = cursor.fetchone()
-        return render_template("userhomepage.html", username=row["username"])
-    else:
-        return redirect("/homepage.html")
-
 
 # Route to create orders
 @app.route("/orders", methods=["GET", "POST"])
@@ -187,61 +178,83 @@ def orders():
     rows = cursor.fetchall()
     for row in rows:
         types.append(row["type"])
+    # Delete orders that are not completed
+    db.execute ("DELETE FROM temp_orders WHERE date < datetime('now', '-5 minutes') ")
+    db.commit()
     if request.method == "POST":
-        # Check selection of products
-        if not request.form.get("product"):
-            flash("Por favor selecciona un producto")
-            return render_template("orders.html", products=products, types=types)
-        # Check valid selection of quantity
-        if not request.form.get("quantity"):
-            flash("Por favor selecciona la cantidad")
-            return render_template("orders.html", products=products, types=types)
-        if int(request.form.get("quantity")) <= 0:
-            flash("Por favor selecciona una cantidad válida (minimo 1)")
-            return render_template("orders.html", products=products, types=types)
-        # Check selection of type
-        if request.form.get("product") == "cupcake" and request.form.get("type") != "und":
-            flash("Los cupcakes solo cuentan con una presentación, por favor solo selecciona und")
-            return render_template("orders.html", products=products, types=types)
-        if request.form.get("product") != "cupcake" and not request.form.get("type"):
-            flash("Por favor selecciona un tamaño")
-            return render_template("orders.html", products=products, types=types)
-        flash("Pedido guardado exitosamente!")
-        # Save input and display order 
-        product = request.form.get("product")
-        quantity = int(request.form.get("quantity"))
-        type = request.form.get("type")
-        # Retrieve price from database if neccesary
-        # For cupcakes price is fixed, take it into consideration
-        if  product != "cupcake":
-            cursor = db.execute("SELECT price FROM products WHERE name = ? AND type = ?", (product, type))
-            price = cursor.fetchone()
-            price = int(price["price"])
-            price = round(price * quantity, 2)
-        else:
-            # For cupcakes price is fixed, take it into consideration
-            price = round(quantity * 6000, 2)
-        # Delete orders that are not completed
-        db.execute ("DELETE FROM temp_orders WHERE date < datetime('now', '-2 minutes') ")
-        db.commit()
-        # Insert data into temp_orders table
-        db.execute("INSERT INTO temp_orders (user_id, product, quantity, type, price) VALUES (?, ?, ?, ?, ?)", 
-                   (session["user_id"], product, quantity, type, price))
-        db.commit()
-        # Retrieve all orders from temp_orders table to display
-        cursor = db.execute("SELECT * FROM temp_orders WHERE user_id = ?", (session["user_id"],))
-        orders = cursor.fetchall()
-        # Retrieve total purchase
-        cursor = db.execute("SELECT SUM(price) AS total FROM temp_orders WHERE user_id = ?", (session["user_id"],))
-        total = cursor.fetchone()
-        total = total["total"]
-        return render_template("orders.html", products=products, types=types, orders=orders, total_purchase=total)
+        if request.form.get("action") == "save":
+            # Check selection of products
+            if not request.form.get("product"):
+                flash("Por favor selecciona un producto")
+                return redirect("/orders")
+            # Check valid selection of quantity
+            if not request.form.get("quantity"):
+                flash("Por favor selecciona la cantidad")
+                return redirect("/orders")
+            if int(request.form.get("quantity")) <= 0:
+                flash("Por favor selecciona una cantidad válida (minimo 1)")
+                return redirect("/orders")
+            # Check selection of type
+            if request.form.get("product") == "cupcake" and request.form.get("type") != "und":
+                flash("Los cupcakes solo cuentan con una presentación, por favor solo selecciona und")
+                return redirect("/orders")
+            if request.form.get("product") != "cupcake" and not request.form.get("type"):
+                flash("Por favor selecciona un tamaño")
+                return redirect("/orders")
+            if request.form.get("product") != "cupcake" and request.form.get("type") == "und":
+                flash("Por favor selecciona un tamaño valido")
+                return redirect("/orders")
+            flash("Producto guardado exitosamente! (recuerda que pasados 5 minutos, si no realizas la compra, los productos añadidos seran eliminados)")
+            # Save input and display order 
+            product = request.form.get("product")
+            quantity = int(request.form.get("quantity"))
+            type = request.form.get("type")
+            # Retrieve price from database
+            if  product != "cupcake":
+                cursor = db.execute("SELECT price FROM products WHERE name = ? AND type = ?", (product, type))
+                price = cursor.fetchone()
+                # Check valid price
+                if price is None:
+                    flash("Producto no disponible o no existe")
+                else:
+                    price = int(price["price"])
+                    price = round(price * quantity, 2)
+            else:
+                # For cupcakes price is fixed, take it into consideration
+                price = round(quantity * 6000, 2)
+            # Delete orders that are not completed
+            db.execute ("DELETE FROM temp_orders WHERE date < datetime('now', '-2 minutes') ")
+            db.commit()
+            # Insert data into temp_orders table
+            db.execute("INSERT INTO temp_orders (user_id, product, quantity, type, price) VALUES (?, ?, ?, ?, ?)", 
+                    (session["user_id"], product, quantity, type, price))
+            db.commit()
+            # Retrieve all orders from temp_orders table to display
+            cursor = db.execute("SELECT * FROM temp_orders WHERE user_id = ?", (session["user_id"],))
+            orders = cursor.fetchall()
+            # Retrieve total purchase
+            cursor = db.execute("SELECT SUM(price) AS total FROM temp_orders WHERE user_id = ?", (session["user_id"],))
+            total = cursor.fetchone()
+            total = total["total"]
+            return render_template("orders.html", products=products, types=types, orders=orders, total_purchase=total)
         if request.form.get("action") == "checkout":
             # Move order temp_orders to users_orders
-            
-            # Delete temp_orders
-            # Return to userhomepage
-            return render_template("userhomepage.html")
+            cursor = db.execute ("SELECT * FROM temp_orders WHERE user_id = ?", (session["user_id"],))
+            final_orders = cursor.fetchall()
+            # Ensure that user knows that tried to sent and empty order
+            if not final_orders:
+                flash("No has añadido nada a tu orden")
+                return redirect("/orders")
+            else:
+                for order in final_orders:
+                    db.execute("INSERT INTO users_orders (user_id, product, quantity, type, price) VALUES (?, ?, ?, ?, ?)", 
+                            (order["user_id"], order["product"], order["quantity"], order["type"], order["price"]))
+                db.commit()
+                # Delete temp_orders
+                db.execute ("DELETE FROM temp_orders WHERE user_id = ?", (session["user_id"],))
+                db.commit()
+                # Return to homepage
+                return redirect("/")
     else:
         # Retrive and empty order if the user has one
         cursor = db.execute("SELECT * FROM temp_orders WHERE user_id = ?", (session["user_id"],))
@@ -250,8 +263,68 @@ def orders():
         cursor = db.execute("SELECT SUM(price) AS total FROM temp_orders WHERE user_id = ?", (session["user_id"],))
         total = cursor.fetchone()
         total = total["total"]
+        # Check that total returns a value
+        if total is None:
+            total = 0
         return render_template("orders.html", products=products, types=types, orders=orders, total_purchase=total)
     
+# Orders history route
+@app.route("/history")
+@login_requered
+def user_history():
+    #Limit page of histtory (future scalability)
+    page = int(request.args.get("page", 1))
+    page_rows = 10
+    offset = (page - 1) * page_rows
+    # Get user orders history
+    db = get_db()
+    cursor = db.execute("SELECT * FROM users_orders WHERE user_id = ? ORDER BY date DESC LIMIT ? OFFSET ?", (session["user_id"], page_rows, offset))
+    orders = cursor.fetchall()
+    return render_template("history.html", orders=orders, page=page, page_rows=page_rows)
+
+# Route to password change
+@app.route("/password_update", methods=["GET", "POST"])
+def password_update():
+
+    # Forget session to ensure security
+    session.clear()
+
+    if request.method == "POST":
+        # Check that are not empy fields
+        if not request.form.get("username"):
+            flash("Por favor introduce tu usuario o teléfono")
+            return render_template("password_update.html")
+        if not request.form.get("password"):
+            flash("Por favor introduce tu contraseña actual")
+            return render_template("password_update.html")
+        if not request.form.get("new_password"):
+            flash("Por favor introduce una nueva contraseña")
+            return render_template("password_update.html")
+        if not request.form.get("confirmation"):
+            flash("Por favor confirma tu nueva contraseña")
+            return render_template("password_update.html")
+        # check that username or phone are in the database and that password matches the one in the database
+        db = get_db()
+        cursor = db.execute("SELECT * FROM users WHERE username = ? OR phone = ?", (request.form.get("username"),request.form.get("username")))
+        row = cursor.fetchone()
+        if row is None or not check_password_hash(row["hash"], request.form.get("password")):
+            return render_template("password_update.html", message="Usuario o contraseña incorrecta!")
+        # Check that new password complies with security requeriments
+        if not password_check(request.form.get("new_password")):
+            return render_template("password_update.html", message="La contraseña debe tener al menos 6 caracteres y un símbolo!")
+        # Check that new password matches confirmation
+        if request.form.get("new_password") != request.form.get("confirmation"):
+            return render_template("password_update.html", message="Las contraseñas no coinciden!")
+        # Hash new password
+        password = generate_password_hash(request.form.get("new_password"))
+        # Update user password into database
+        db.execute("UPDATE users SET hash = ? WHERE id = ?", (password, row["id"]))
+        db.commit()
+        # Save user session and redirect to homepage
+        session["user_id"] = row["id"]
+        return redirect("/", 200)
+    else:    
+        return render_template("password_update.html")
 
 # Routes to products  
 @app.route("/cupcakes")

@@ -1,13 +1,13 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Inicio usuario
+    Historial
 {% endblock %}
 
 {% block main %}
     <section class="products">
-      <h1 class="mb-5">Bienvenido {{ username }}!</h1>
-        <h2>Es un placer tenerte de vuelta, revisa lo último que pediste:</h2>
+      <h1 class="mb-5">Revisa nuestra historia juntos!</h1>
+        <h2>Echa un vistazo a tu historial de pedidos:</h2>
             <table class="table custom-table">
                 <thead>
                     <tr>
@@ -20,12 +20,12 @@
                 </thead>
                 <tbody>
                     <!--Populate the table with last order information-->
-                    {% if not last_order %}
+                    {% if not orders %}
                         <tr>
                             <td colspan="5">Aún no has realizado tu primera compra.</td>
                        </tr>
                     {% else %}
-                        {% for row in last_order %}
+                        {% for row in orders %}
                         <tr>
                             <td>{{ row.product }}</td>
                             <td>{{ row.quantity }}</td>
@@ -37,6 +37,15 @@
                     {% endif %}
                 </tbody>
             </table>
-        <h2>¿Listo para realizar otro pedido?</h2>
     </section>
+    <div class="d-flex justify-content-between my-3">
+        {% if page > 1 %}    
+            <a class="btn btn-primary" href="{{ url_for('user_history', page=page-1) }}">Anterior</a>
+        {% else %}
+            <span></span>
+        {% endif %}
+        {% if orders|length == page_rows %}
+            <a class="btn btn-primary" href="{{ url_for('user_history', page=page+1) }}">Siguiente</a>
+        {% endif %}
+    </div>
 {% endblock %}
