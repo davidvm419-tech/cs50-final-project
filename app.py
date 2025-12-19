@@ -272,7 +272,7 @@ def orders():
 @app.route("/history")
 @login_requered
 def user_history():
-    #Limit page of histtory (future scalability)
+    #Limit page of history (future scalability)
     page = int(request.args.get("page", 1))
     page_rows = 10
     offset = (page - 1) * page_rows
