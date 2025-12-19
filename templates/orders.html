@@ -19,12 +19,13 @@
                 <input autocomplete="off" class="form-control mx-auto w-auto" name="quantity" placeholder="Cantidad" type="number">
             </div>
                 <div class="mb-3">
-                <select class="form-control mx-auto w-auto" name="type">
-                    <option disabled selected>Tamaño (seleccionar und para cupcakes)</option>
-                    {% for type in types %}
-                        <option>{{ type }}</option>
-                    {% endfor %}
-                </select>
+                    <select class="form-control mx-auto w-auto" name="type">
+                        <option disabled selected>Tamaño (seleccionar und para cupcakes)</option>
+                        {% for type in types %}
+                            <option>{{ type }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
                 <br>
             <button class="btn btn-primary mb-3" type="submit" name="action" value="save">Guardar productos</button>
         </form>
@@ -38,7 +39,7 @@
                         <th>Tamaño</th>
                         <th>Precio</th>
                     </tr>
-                <t/head>
+                </thead>
                 <tbody>
                     <!--Populate the table with order information-->
                     {% if orders is not defined or orders == [] %}
