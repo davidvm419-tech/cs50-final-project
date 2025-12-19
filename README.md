@@ -8,7 +8,7 @@
 all images logos and descriptions for the products are the property of my friend Carolina who provided them so this project could be possible. 
 
 ### Background
-As I am from Colombia, we still need to adopt a lot of technologies to improve our work and our productivity. In addition I like web development and I am going to focus on that area. Based on that the idea to develop of a simple web application and to improve upon that was born. This is the first step in that direction.
+As I am from Colombia, we still need to adopt a lot of technologies to improve our work and our productivity. In addition I like web development and I am going to focus on that area. Based on that the idea to develop of a simple webpage and to improve upon that was born. This is the first step in that direction.
 
 ### Toolkit
 To create this web application I used, mainly, Python, HTML, jinja, Bootstrap, CSS, Flask and SQL. In addition I created everything outside CS50 Codespace so I could take off my training wheels a bit more. I used MJicrosoft Copilot as a teacher, pretty much in the same spirit as the rubber duck debugger, Flask documentation and W3School as helpers when I encountered bugs and syntax errors. 
