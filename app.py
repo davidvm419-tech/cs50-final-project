@@ -4,6 +4,7 @@ import sqlite3
 from datetime import datetime
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
+from flask_sqlalchemy import SQLAlchemy 
 from flask import g
 from msgspec import field
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -29,7 +30,10 @@ def get_db():
     """
     db = getattr(g, "_database", None)
     if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
+        # Get absolute path of database.db to connect to it
+        basedir = os.path.abspath(os.path.dirname(__file__))
+        db_path = os.path.join(basedir, DATABASE)
+        db = g._database = sqlite3.connect(db_path)
         db.row_factory = sqlite3.Row
     return db
 

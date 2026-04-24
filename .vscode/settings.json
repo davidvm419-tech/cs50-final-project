@@ -1,3 +1,4 @@
 {
-    "git.diagnosticsCommitHook.enabled": false
+    "git.diagnosticsCommitHook.enabled": false,
+    "python-envs.defaultEnvManager": "ms-python.python:system"
 }
