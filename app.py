@@ -1,7 +1,7 @@
 import os
 import sqlite3
 
-from datetime import datetime
+from datetime import date
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy 
@@ -60,6 +60,12 @@ def after_request(response):
     response.headers["Expires"] = 0
     response.headers["Pragma"] = "no-cache"
     return response
+
+# Dinamyc year for the footer of the website
+@app.context_processor
+def inject_year():
+    return {"year": date.today().year}
+
 
 # Homepage route
 @app.route("/")
@@ -346,3 +352,7 @@ def leches():
 @app.route("/otros")
 def otros():
     return render_template("otros.html")
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
